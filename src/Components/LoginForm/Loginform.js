@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import axios from "axios";
 import {Link} from "react-router-dom";
 import "./loginform.css";
 import {
@@ -15,8 +16,38 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 
 const LoginForm = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [errorMessage, setErrorMessage] = useState("");
     const handleShowPasswordClick = () => {
         setShowPassword(!showPassword);
+    };
+    const handleLogin = async (e) => {
+        try {
+            e.preventDefault();
+            console.log('password sent:', password);//log the password
+            const response = await axios.post("http://localhost:3001/login/login/", {
+                email,
+                password,
+            });
+    
+            console.log("Login response:", response);
+    
+            if (response && response.data) {
+                console.log("Login successful:", response.data);
+                // Handle successful login, e.g., redirect to dashboard
+            } else {
+                console.error("Login failed: Response or data property is undefined");
+                // Handle login failure, display error message, etc.
+            }
+        } catch (error) {
+            console.error("Login failed:", error);
+            if (error.response && error.response.data) {
+                setErrorMessage(error.response.data.message);
+            } else {
+                setErrorMessage("Error during login. Please try again.");
+      }
+    }
     };
     return (
         <div className="loginformdiv">
@@ -30,6 +61,8 @@ const LoginForm = () => {
                         name=" Enter Email Address"
                         label="Enter Email Address"
                         size="medium"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         sx={{
                             '@media (max-width: 768px)': {
                               width: '80vw', // Adjust the width for smaller screens
@@ -57,6 +90,8 @@ const LoginForm = () => {
                         label="Enter Password"
                         size="medium"
                         required={true}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         sx={{
                             '@media (max-width: 768px)': {
                               width: '80vw', // Adjust the width for smaller screens
@@ -87,7 +122,9 @@ const LoginForm = () => {
                             ),
                         }}
                     />
+                    {errorMessage && <div className="error-message">{errorMessage}</div>}
                     <Button
+                    onClick={(e)=> handleLogin(e)}
                         className="registerButton"
                         sx={{
                             '@media (max-width: 768px)': {
@@ -107,6 +144,7 @@ const LoginForm = () => {
                     </Button>
                 </form>
                 <Button
+            
                     className="forgetPassword"
                     sx={{
                         '@media (max-width: 768px)': {

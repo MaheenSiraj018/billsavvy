@@ -1,5 +1,6 @@
 import React from "react";
 import { useState } from "react";
+import axios from "axios";
 import "./signupform.css";
 import {
     Button,
@@ -17,14 +18,60 @@ import FmdGoodSharpIcon from '@mui/icons-material/FmdGoodSharp';
 
 const SignUpForm = () => {
     const [showPassword, setShowPassword] = useState(false);
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
+    const [address, setAddress] = useState("");
+    const [dateOfBirth, setDateOfBirth] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
     const handleShowPasswordClick = () => {
         setShowPassword(!showPassword);
     };
+
+    const handleSignup = async (e) => {
+        try {
+            e.preventDefault();
+            const response = await axios.post("http://localhost:3001/signup/signup/", {
+                username,
+                email,
+                password,
+                phoneNumber,
+                address,
+                dateOfBirth,
+            });
+
+            console.log("Signup response:", response); //log the entire response object
+
+            // Check if response and data property exist
+            if (response && response.data) {
+                // Handle success, maybe show a success message or redirect to login
+                console.log("Signup successful:", response.data);
+                setErrorMessage(""); // clear any previous error messages
+            } else {
+                // Handle error, display error message, etc.
+                console.error("Signup failed: Response or data property is undefined");
+                setErrorMessage("Error during signup. Please try again."); // Provide a generic error message
+            }
+        } catch (error) {
+            // Handle error, display error message, etc.
+            console.error("Signup failed:", error);
+            if (error.response && error.response.data) {
+                // Set the error message received from the backend
+                setErrorMessage(error.response.data.message);
+            } else {
+                // Provide a generic error message if the structure is unexpected
+                setErrorMessage("Error during signup. Please try again.");
+    }
+        }
+
+    };
+
     return (
         <div className="signupformdiv">
             <div className="signupform">
                 <h4 id="signup-header">Register to BillSavvy!</h4>
-                <form>
+                <form  >
                     <TextField
                         className="rectangleTextfield"
                         color="success"
@@ -32,17 +79,19 @@ const SignUpForm = () => {
                         label="Enter Name"
                         size="medium"
                         required={true}
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
                         sx={{
                             '@media (max-width: 768px)': {
-                              width: '80vw', // Adjust the width for smaller screens
+                                width: '80vw', // Adjust the width for smaller screens
                             },
                             '@media (min-width: 769px) and (max-width: 1023px)': {
-                              width: '30vw', // Adjust the width for medium screens
+                                width: '30vw', // Adjust the width for medium screens
                             },
                             '@media (min-width: 1024px)': {
                                 width: '37vw',  // Default width for larger screens
                             },
-                          }}
+                        }}
                         variant="filled"
                         InputProps={{
                             startAdornment: (
@@ -59,23 +108,25 @@ const SignUpForm = () => {
                         name=" Enter Contact Number"
                         label="Enter Contact Numer"
                         size="medium"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
                         disabled={false}
                         sx={{
                             '@media (max-width: 768px)': {
-                              width: '80vw', // Adjust the width for smaller screens
+                                width: '80vw', // Adjust the width for smaller screens
                             },
                             '@media (min-width: 769px) and (max-width: 1023px)': {
-                              width: '30vw', // Adjust the width for medium screens
+                                width: '30vw', // Adjust the width for medium screens
                             },
                             '@media (min-width: 1024px)': {
                                 width: '37vw',  // Default width for larger screens
                             },
-                          }}
+                        }}
                         variant="filled"
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <CallSharpIcon/>
+                                    <CallSharpIcon />
                                 </InputAdornment>
                             ),
                         }}
@@ -87,22 +138,24 @@ const SignUpForm = () => {
                         name=" Enter Email Address"
                         label="Enter Email Address"
                         size="medium"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         sx={{
                             '@media (max-width: 768px)': {
-                              width: '80vw', // Adjust the width for smaller screens
+                                width: '80vw', // Adjust the width for smaller screens
                             },
                             '@media (min-width: 769px) and (max-width: 1023px)': {
-                              width: '30vw', // Adjust the width for medium screens
+                                width: '30vw', // Adjust the width for medium screens
                             },
                             '@media (min-width: 1024px)': {
                                 width: '37vw',  // Default width for larger screens
                             },
-                          }}
+                        }}
                         variant="filled"
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <MailSharpIcon/>
+                                    <MailSharpIcon />
                                 </InputAdornment>
                             ),
                         }}
@@ -114,22 +167,24 @@ const SignUpForm = () => {
                         name=" Enter Residential Address"
                         label="Enter Residential Address"
                         size="medium"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
                         sx={{
                             '@media (max-width: 768px)': {
-                              width: '80vw', // Adjust the width for smaller screens
+                                width: '80vw', // Adjust the width for smaller screens
                             },
                             '@media (min-width: 769px) and (max-width: 1023px)': {
-                              width: '30vw', // Adjust the width for medium screens
+                                width: '30vw', // Adjust the width for medium screens
                             },
                             '@media (min-width: 1024px)': {
                                 width: '37vw', // Default width for larger screens
                             },
-                          }}
+                        }}
                         variant="filled"
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <FmdGoodSharpIcon/>
+                                    <FmdGoodSharpIcon />
                                 </InputAdornment>
                             ),
                         }}
@@ -140,23 +195,25 @@ const SignUpForm = () => {
                         color="success"
                         label="Enter Date of Birth"
                         size="medium"
+                        value={dateOfBirth}
+                        onChange={(e) => setDateOfBirth(e.target.value)}
                         sx={{
                             '@media (max-width: 768px)': {
-                              width: '80vw', // Adjust the width for smaller screens
+                                width: '80vw', // Adjust the width for smaller screens
                             },
                             '@media (min-width: 769px) and (max-width: 1023px)': {
-                              width: '30vw', // Adjust the width for medium screens
+                                width: '30vw', // Adjust the width for medium screens
                             },
                             '@media (min-width: 1024px)': {
                                 width: '37vw',  // Default width for larger screens
                             },
-                          }}
+                        }}
                         variant="filled"
                         type="date"
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <CalendarTodayIcon/>
+                                    <CalendarTodayIcon />
                                 </InputAdornment>
                             ),
                         }}
@@ -169,17 +226,19 @@ const SignUpForm = () => {
                         label="Enter Password"
                         size="medium"
                         required={true}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                         sx={{
                             '@media (max-width: 768px)': {
-                              width: '80vw', // Adjust the width for smaller screens
+                                width: '80vw', // Adjust the width for smaller screens
                             },
                             '@media (min-width: 769px) and (max-width: 1023px)': {
-                              width: '30vw', // Adjust the width for medium screens
+                                width: '30vw', // Adjust the width for medium screens
                             },
                             '@media (min-width: 1024px)': {
                                 width: '37vw',  // Default width for larger screens
                             },
-                          }}
+                        }}
                         variant="filled"
                         InputProps={{
                             startAdornment: (
@@ -199,29 +258,35 @@ const SignUpForm = () => {
                             ),
                         }}
                     />
-                    <Button
+
+{errorMessage && <div className="error-message">{errorMessage}</div>}
+
+                    <Button 
+                    
+                        onClick={(e)=>handleSignup(e)}
                         className="rectangleButton"
                         sx={{
                             '@media (max-width: 768px)': {
-                              width: '80vw', // Adjust the width for smaller screens
+                                width: '80vw', // Adjust the width for smaller screens
                             },
                             '@media (min-width: 769px) and (max-width: 1034px)': {
-                              width: '30vw', // Adjust the width for medium screens
+                                width: '30vw', // Adjust the width for medium screens
                             },
                             '@media (min-width: 1024px)': {
-                              width: '37vw', // Default width for larger screens
+                                width: '37vw', // Default width for larger screens
                             },
-                          }}
+                        }}
                         color="warning"
                         variant="contained"
                     >
                         Register
                     </Button>
                 </form>
-    
+                
             </div>
         </div>
     );
+
 }
 
 export default SignUpForm;
