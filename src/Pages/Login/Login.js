@@ -4,6 +4,9 @@ import LoginForm from "../../Components/LoginForm/Loginform.js";
 import "./login.module.css";
 import useMediaQuery from '@mui/material/useMediaQuery';
 
+import Dashboard from "../Dashboard/Dashboard.js"
+import {Link} from "react-router-dom";
+
 
 const Login= ()=>{
     const isScreenWideEnough = useMediaQuery('(min-width:768px)');
@@ -15,6 +18,8 @@ const Login= ()=>{
       )}
             <LoginForm/>
         </div>
+        
+        <Link to='/Dashboard' >Go to Dashboard</Link>
         </div>
     );
 }
