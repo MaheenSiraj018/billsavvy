@@ -1,48 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import {CategoryScale} from 'react-chartjs-2'; 
 import { Bar } from 'react-chartjs-2';
 import "./barchart.css";
-
 
 const BarChart = () => {
     const [chartData, setChartData] = useState(null);
 
     useEffect(() => {
-        // Dummy data for testing (replace this with your actual backend data)
         const dummyData = [
             {
                 _id: 'dummyId',
                 user: 'dummyUserId',
                 bedrooms: 3,
                 people: 4,
-                ac: 'Yes',
-                television: 'No',
+                ac: true, // Converted to boolean
+                television: false, // Converted to boolean
                 fans: 2,
-                efficientAppliances: 'Yes',
-                renewableEnergy: 'No',
+                efficientAppliances: true, // Converted to boolean
+                renewableEnergy: true, // Converted to boolean
                 laundryFrequency: 'More than 10 times',
                 devices: 'More than 5',
             },
         ];
 
-        // Transform the dummy data for the bar chart
         const transformedData = transformDataForChart(dummyData);
         setChartData(transformedData);
-    }, []);
+    }, []); // Empty array dependency to run the effect only once
 
     const transformDataForChart = (formData) => {
         const labels = Object.keys(formData[0]).filter(key => key !== '_id' && key !== 'user');
         const datasets = [
             {
                 label: 'Quantity',
-                backgroundColor: 'rgba(75,192,192,0.4)',
-                borderColor: 'rgba(75,192,192,1)',
+                backgroundColor: '#F3B140',
+                borderColor: '#F3B140',
                 borderWidth: 1,
-                hoverBackgroundColor: 'rgba(75,192,192,0.6)',
-                hoverBorderColor: 'rgba(75,192,192,1)',
+                hoverBackgroundColor: '#FFD699',
+                hoverBorderColor: '#FFD699',
                 data: labels.map(label => {
                     const value = formData[0][label];
-                    return value === 'Yes' ? 1 : value === 'No' ? 0 : value;
+                    return typeof value === 'boolean' ? (value ? 1 : 0) : mapNonNumericValue(label, value);
                 }),
             },
         ];
@@ -50,74 +46,84 @@ const BarChart = () => {
         return { labels, datasets };
     };
 
+    const mapNonNumericValue = (label, value) => {
+        // Check for specific cases and map non-numeric values
+        switch (label) {
+            case 'laundryFrequency':
+                return mapLaundryFrequency(value);
+            case 'devices':
+                return mapDevices(value);
+            // Add more cases for other non-numeric values if needed
+            default:
+                return typeof value === 'number' ? value : 0;
+        }
+    };
+
+    const mapLaundryFrequency = (value) => {
+        switch (value) {
+            case 'More than 10 times':
+                return 11;
+            // Add more cases for other possibilities
+            default:
+                return 0;
+        }
+    };
+
+    const mapDevices = (value) => {
+        switch (value) {
+            case 'More than 5':
+                return 6;
+            // Add more cases for other possibilities
+            default:
+                return 0;
+        }
+    };
+
     return (
-        <div className='barchart'>
+        <div className='barchart' >
 //             <h1 className="barchartheader">Consumption<span> Trends</span></h1>
-            {chartData && (
+            {chartData && chartData.labels ? (
                 <div>
-                    <Bar data={chartData} />
-                    {/* Additional UI elements or information can be added here */}
+                    <Bar
+                        data={chartData}
+                        options={{
+                            scales: {
+                                x: {
+                                    type: 'category',
+                                    labels: chartData.labels,
+                                    ticks: {
+                                        font: {
+                                            weight: 'bold',
+                                        },
+                                    },
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        font: {
+                                            weight: 'bold',
+                                        },
+                                    },
+                                },
+                            },
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                },
+                            },
+                            elements: {
+                                bar: {
+                                    barPercentage: 0.7,
+                                },
+                            },
+                        }}
+                    />
                 </div>
+            ) : (
+                <div>Loading...</div>
             )}
         </div>
     );
 };
 
 export default BarChart;
-
-
-// import React, { useState, useEffect } from 'react';
-// import { Bar } from 'react-chartjs-2';
-// import "./barchart.css";
-
-// const BarChart = ({ userId, formData }) => {
-//     const [chartData, setChartData] = useState(null);
-
-//     useEffect(() => {
-//         // Fetch user form data based on userId
-//         fetch(/api/user-form-data/${userId})
-//             .then(response => response.json())
-//             .then(data => {
-//                 if (data.formData) {
-//                     // Transform the data for the bar chart
-//                     const transformedData = transformDataForChart(data.formData);
-//                     setChartData(transformedData);
-//                 }
-//             })
-//             .catch(error => console.error('Error fetching user form data:', error));
-//     }, [userId]);
-
-//     const transformDataForChart = (formData) => {
-//         const labels = Object.keys(formData[0]).filter(key => key !== '_id' && key !== 'user');
-//         const datasets = [
-//             {
-//                 label: 'Quantity',
-//                 backgroundColor: 'rgba(75,192,192,0.4)',
-//                 borderColor: 'rgba(75,192,192,1)',
-//                 borderWidth: 1,
-//                 hoverBackgroundColor: 'rgba(75,192,192,0.6)',
-//                 hoverBorderColor: 'rgba(75,192,192,1)',
-//                 data: labels.map(label => {
-//                     const value = formData[0][label];
-//                     return value === 'Yes' ? 1 : value === 'No' ? 0 : value;
-//                 }),
-//             },
-//         ];
-
-//         return { labels, datasets };
-//     };
-
-//     return (
-//         <div className='barchart'>
-//             <h1 className="barchartheader">Consumption<span> Trends</span></h1>
-//             {chartData && (
-//                 <div>
-//                     <Bar data={chartData} />
-//                     {/* Additional UI elements or information can be added here */}
-//                 </div>
-//             )}
-//         </div>
-//     );
-// };
-
-// export default BarChart;

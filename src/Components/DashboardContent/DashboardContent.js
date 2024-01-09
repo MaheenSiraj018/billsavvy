@@ -9,7 +9,24 @@ import { KingBed, People, AcUnit, Tv, WbIncandescent, EnergySavingsLeaf, WbSunny
 import { CssBaseline, Container, Box, Hidden, Grid, Typography } from '@mui/material';
 import DashboardCard from '../DashboardCard/DashboardCard';
 import FeedbackForm from '../FeedbackForm/FeedbackForm';
+import {
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import {Bar} from 'react-chartjs-2';
 import BarChart from '../BarChart/BarChart';
+ChartJS.register(
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend
+)
+
 
 
 function Dashboard() {

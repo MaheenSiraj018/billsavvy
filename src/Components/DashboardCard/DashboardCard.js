@@ -9,9 +9,9 @@ const DashboardCard = ({ color, icon, title, data }) => {
         <Box display="flex" justifyContent="space-between" alignItems="center" gap="4px">
           <Box display="flex" alignItems="center">
             <Box sx={{ fontSize: '2rem', marginRight: '10px', color: "#00000" }}>{icon}</Box>
-            <Typography variant="h6" sx={{ fontSize: '0.99rem', fontWeight:"200" }}>{title}</Typography>
+            <Typography variant="h6" sx={{ fontSize: '0.97rem', fontWeight:"200" }}>{title}</Typography>
           </Box>
-          <Typography variant="h5" sx={{ fontSize: '1.3rem', fontWeight:"530" }}>{data}</Typography>
+          <Typography variant="h5" sx={{ fontSize: '1.4rem', fontWeight:"550" }}>{data}</Typography>
         </Box>
       </CardContent>
     </Card>
