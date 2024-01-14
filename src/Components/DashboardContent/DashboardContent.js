@@ -1,4 +1,6 @@
 import React from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import {
   BsFillArchiveFill,
   BsFillGrid3X3GapFill,
@@ -9,6 +11,7 @@ import { KingBed, People, AcUnit, Tv, WbIncandescent, EnergySavingsLeaf, WbSunny
 import { CssBaseline, Container, Box, Hidden, Grid, Typography } from '@mui/material';
 import DashboardCard from '../DashboardCard/DashboardCard';
 import FeedbackForm from '../FeedbackForm/FeedbackForm';
+import jwtDecode from 'jwt-decode'; // Ensure jwt-decode is installed
 import {
   Chart as ChartJS,
   BarElement,
@@ -30,17 +33,43 @@ ChartJS.register(
 
 
 function Dashboard() {
-  const cardData = [
-    { color: '#CDD583', icon: <KingBed />, title: 'No of Bedrooms', data: '3' },
-    // { color: '#a5d6a7', icon: <People />, title: 'No of People in House', data: '5' },
-    { color: '#E1EEC7', icon: <AcUnit />, title: 'Availability of AC', data: 'Yes' },
-    { color: '#F8F8F8', icon: <Tv />, title: 'Availability of Television', data: 'Yes' },
-    { color: '#F3B140', icon: <WbIncandescent />, title: 'No of Ceiling Fans', data: '4' },
-    { color: '#CDD583', icon: <EnergySavingsLeaf />, title: 'Energy Efficient Appliances', data: 'Yes' },
-    { color: '#E1EEC7', icon: <WbSunny />, title: 'Renewable Energy Sources', data: 'Solar' },
-    { color: '#F8F8F8', icon: <LocalLaundryService />, title: 'Use of Washing Machine', data: 'Daily' },
-    { color: '#F3B140', icon: <DevicesOther />, title: 'No of Electronic Devices', data: '10' },
-  ];
+    const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const userId = jwtDecode(token).id;
+
+        const response = await axios.get(`http://localhost:3001/dashboard/${userId}`);
+        setUserData(response.data.inputData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  // Map the user data to card data
+  const cardData = userData ? [
+    { color: '#CDD583', icon: <KingBed />, title: 'No of Bedrooms', data: userData.bedrooms },
+    { color: '#a5d6a7', icon: <People />, title: 'No of People in House', data: userData.numberOfPeople },
+    { color: '#E1EEC7', icon: <AcUnit />, title: 'Availability of AC', data: userData.hasAC },
+    { color: '#F8F8F8', icon: <Tv />, title: 'Availability of Television', data: userData.hasTV },
+    { color: '#F3B140', icon: <WbIncandescent />, title: 'No of Ceiling Fans', data: userData.numberOfFans },
+    { color: '#CDD583', icon: <EnergySavingsLeaf />, title: 'Energy Efficient Appliances', data: userData.usesEnergyEfficientAppliances },
+    { color: '#E1EEC7', icon: <WbSunny />, title: 'Renewable Energy Sources', data: userData.usesRenewableEnergy },
+    { color: '#F8F8F8', icon: <LocalLaundryService />, title: 'Use of Washing Machine', data: userData.washingMachineUsage },
+    { color: '#F3B140', icon: <DevicesOther />, title: 'No of Electronic Devices', data: userData.numberOfElectronicDevices },
+  ] : [];
 
 
   return (

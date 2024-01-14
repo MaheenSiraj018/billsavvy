@@ -1,6 +1,7 @@
-
 import React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import jwtDecode from 'jwt-decode';
 import 
 {BsUpload,  BsFillCaretLeftFill,BsBrightnessHighFill ,BsGrid1X2Fill, BsFillArchiveFill, BsFillGrid3X3GapFill, BsPeopleFill, 
   BsListCheck, BsMenuButtonWideFill, BsFillGearFill, BsPencil}
@@ -11,17 +12,41 @@ import
  import {Link} from "react-router-dom";
 
 function SideNavbar({openSidebarToggle, OpenSidebar}) {
-    const [username, setUsername] = useState('Username ');
+    //const [username, setUsername] = useState('Username ');
+    const [userData, setUserData] = useState({
+        username: 'Loading...',
+        email: 'Loading...'
+      });
   const [isEditing, setIsEditing] = useState(false);
   const [newUsername, setNewUsername] = useState('');
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const userId = jwtDecode(token).id;
+        const response = await axios.get(`http://localhost:3001/dashboard/${userId}`);
+        setUserData({
+          username: response.data.username,
+          email: response.data.signupData.email
+        });
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   const handleEditClick = () => {
     setIsEditing(true);
-    setNewUsername(username);
+    setNewUsername(userData.username);
   };
 
   const handleSaveClick = () => {
     setUsername(newUsername);
+    //api call to update username in backend
+    //setUserData({...userData, username: newUsername});
     setIsEditing(false);
   };
 
@@ -61,13 +86,13 @@ function SideNavbar({openSidebarToggle, OpenSidebar}) {
             </>
           ) : (
             <>
-              {username}
+              {userData.username}
               <BsPencil className="icon" onClick={handleEditClick} style={{cursor:'pointer'}}/>
             </>
           )}
         </li>
 
-        <li className='sidebar-list-item'> user123@gmail.com</li>
+        <li className='sidebar-list-item'>{userData.email}</li>
         <li className='sidebar-list-item'>
                 {/* <a href="">
                     <BsFillArchiveFill className='icon'/> Products
